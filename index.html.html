@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Mensal de Estudos</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efe9;
+    --text: #1a1a1a;
+    --text2: #6b6b68;
+    --text3: #9b9b97;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #085041;
+    --red-light: #FCEBEB;
+    --red-dark: #A32D2D;
+    --amber-light: #FAEEDA;
+    --amber-dark: #633806;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #f0efe9;
+      --text2: #a0a09a;
+      --text3: #6b6b65;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --green-light: #04342C;
+      --green-dark: #9FE1CB;
+      --red-light: #501313;
+      --red-dark: #F09595;
+      --amber-light: #412402;
+      --amber-dark: #FAC775;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; }
+  .progress-wrap { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .progress-label { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s; }
+  .note { font-size: 13px; color: var(--text2); background: var(--bg2); border-left: 3px solid var(--green); border-radius: 0 var(--radius) var(--radius) 0; padding: 10px 14px; margin-bottom: 1.5rem; line-height: 1.6; }
+  .week-section { margin-bottom: 2rem; }
+  .week-header { font-size: 12px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); margin-bottom: 14px; }
+  .group { margin-bottom: 16px; }
+  .group-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .group-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .badge { font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+  .b-urgente { background: var(--red-light); color: var(--red-dark); }
+  .b-importante { background: var(--amber-light); color: var(--amber-dark); }
+  .b-nutre { background: var(--green-light); color: var(--green-dark); }
+  .item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; cursor: pointer; transition: background 0.12s; user-select: none; }
+  .item:hover { background: var(--bg2); }
+  .item.done { opacity: 0.4; }
+  .item.done .ititle { text-decoration: line-through; }
+  .cb { width: 18px; height: 18px; border: 1.5px solid var(--border2); border-radius: 4px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+  .cb.checked { background: var(--green); border-color: var(--green); }
+  .cb.checked::after { content: ''; display: block; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); margin-top: -2px; }
+  .ibody { flex: 1; }
+  .ititle { font-size: 14px; color: var(--text); line-height: 1.4; }
+  .isub { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+  .itag { font-size: 11px; color: var(--text3); background: var(--bg2); border: 0.5px solid var(--border); border-radius: 20px; padding: 2px 9px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .reset-btn { display: inline-block; margin-top: 2rem; font-size: 13px; color: var(--text3); background: none; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 16px; cursor: pointer; transition: background 0.12s; }
+  .reset-btn:hover { background: var(--bg2); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Checklist mensal de estudos</h1>
+  <p class="subtitle">Terça a sábado · a partir das 16h · organizado por prioridade</p>
+
+  <div class="progress-wrap">
+    <div class="progress-label" id="prog-label">0 de 0 itens concluídos</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="note">Técnico: ~15 pág/sessão com anotações · Literatura: ~20 pág/dia · Segunda sem estudos (atendimentos clínicos) · Ritmo pensado para sustentar, não esgotar.</div>
+
+  <!-- SEMANA 1 -->
+  <div class="week-section">
+    <div class="week-header">Semana 1 — terça a sábado</div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Pós-graduação</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Videoaulas da pós — assistir módulo da semana</p><p class="isub">Prioridade máxima: assistir antes de qualquer leitura técnica no dia</p></div><span class="itag">Toda semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">DBT — Livro de atividades (McKay)</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Terça — caps. 1–2 · Introdução à DBT e mindfulness</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quarta — caps. 3–4 · Tolerância ao mal-estar</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quinta — caps. 5–6 · Regulação emocional</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sexta — caps. 7–8 · Efetividade interpessoal</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sábado — revisão e fichas de referência clínica</p><p class="isub">Consolidar o que leu, criar fichas para uso nos atendimentos</p></div><span class="itag">~45min</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">RPG / Escrita criativa</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Escrita criativa — todos os dias (ter–sáb)</p><p class="isub">1h30–2h de escrita livre para o livro/RPG · bloco fixo, não negociável</p></div><span class="itag">Todo dia</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Guerra Fria — consumir 1 conteúdo (podcast/vídeo/artigo)</p><p class="isub">Foco no contexto do seu personagem · anotar referências para a narrativa</p></div><span class="itag">2× na semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Literatura</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Almas Mortas — Gogol · ~20 pág/dia</p><p class="isub">Encerra a sessão · leitura prazerosa, sem pressão de prazo</p></div><span class="itag">Todo dia</span></div>
+    </div>
+  </div>
+
+  <!-- SEMANA 2 -->
+  <div class="week-section">
+    <div class="week-header">Semana 2 — terça a sábado</div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Pós-graduação</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Videoaulas da pós — módulo da semana</p><p class="isub">Manter regularidade com as aulas antes das leituras técnicas</p></div><span class="itag">Toda semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">DBT — Linehan (técnico aprofundado)</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Terça — caps. 1–2 · Fundamentos teóricos da DBT</p><p class="isub">~15 pág · anotar conceitos-chave para uso clínico</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quarta — caps. 3–4 · Avaliação e formulação de caso</p><p class="isub">~15 pág · relacionar com pacientes atuais</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quinta — caps. 5–6 · Estratégias de mudança</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sexta — caps. 7–8 · Estratégias de validação</p><p class="isub">~15 pág com anotações</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sábado — revisão e fichas clínicas</p><p class="isub">Consolidar Linehan + conectar com o McKay da semana anterior</p></div><span class="itag">~45min</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Adolescência — Siegel (Cérebro adolescente)</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Terça e quinta — caps. 1–3 · Neurociência do adolescente</p><p class="isub">~15 pág/sessão · base para a pós e atendimentos hospitalares</p></div><span class="itag">2× na semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">RPG / Escrita criativa</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Escrita criativa — todos os dias (ter–sáb)</p><p class="isub">1h30–2h · manter o fio narrativo do livro/RPG</p></div><span class="itag">Todo dia</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Guerra Fria — 1 conteúdo novo</p><p class="isub">Podcast, vídeo ou artigo · anotar para a narrativa</p></div><span class="itag">2× na semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Literatura</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Almas Mortas — Gogol · continuar (~20 pág/dia)</p><p class="isub">Se terminar, iniciar Os Cadernos de Malte Laurids Brigge — Rilke</p></div><span class="itag">Todo dia</span></div>
+    </div>
+  </div>
+
+  <!-- SEMANA 3 -->
+  <div class="week-section">
+    <div class="week-header">Semana 3 — terça a sábado</div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Pós-graduação</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Videoaulas da pós — módulo da semana</p></div><span class="itag">Toda semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Cuidado integral ao adolescente (Santos)</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Terça — caps. 1–2 · Saúde integral do adolescente</p><p class="isub">~15 pág · base para a pós e atendimentos hospitalares</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quarta — caps. 3–4 · Saúde mental e vulnerabilidades</p><p class="isub">~15 pág com anotações · conectar com casos clínicos</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quinta — caps. 5–6 · Ideação suicida e autolesão no adolescente</p><p class="isub">~15 pág · prioridade máxima deste livro</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sexta — revisão + fichas dos caps. lidos</p><p class="isub">Criar fichas práticas para uso nos atendimentos</p></div><span class="itag">~45min</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Adolescência — Siegel · continuação</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sábado — caps. 4–6 · Identidade, risco e conexão</p><p class="isub">~15 pág · complementa o Santos da semana</p></div><span class="itag">~1h</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">RPG / Escrita criativa</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Escrita criativa — todos os dias</p><p class="isub">1h30–2h · manter consistência</p></div><span class="itag">Todo dia</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Guerra Fria — 1 conteúdo novo</p></div><span class="itag">2× na semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Literatura</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Rilke — Os Cadernos de Malte Laurids Brigge · ~20 pág/dia</p><p class="isub">Se já terminou Gogol; senão continua Almas Mortas</p></div><span class="itag">Todo dia</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Filosofia</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Schopenhauer — As dores do mundo · iniciar</p><p class="isub">~15 pág · leitura contemplativa, sem pressa</p></div><span class="itag">1× na semana</span></div>
+    </div>
+  </div>
+
+  <!-- SEMANA 4 -->
+  <div class="week-section">
+    <div class="week-header">Semana 4 — terça a sábado</div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Pós-graduação</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Videoaulas da pós — módulo da semana</p></div><span class="itag">Toda semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Revisão do mês + consolidação</span><span class="badge b-urgente">Urgente</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Terça — revisar fichas do McKay e Linehan</p><p class="isub">Conectar conceitos DBT com casos clínicos reais</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quarta — revisar fichas de adolescência (Santos + Siegel)</p><p class="isub">Montar um mini-guia prático para atendimentos com adolescentes</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Quinta — continuar Linehan ou Santos (o que ficou pendente)</p><p class="isub">Sem pressão: o que não fechou continua no próximo mês</p></div><span class="itag">~1h</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Sexta — planejar o próximo mês</p><p class="isub">Avaliar o que avançou, ajustar ritmo, definir prioridade do mês seguinte</p></div><span class="itag">~30min</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">RPG / Escrita criativa</span><span class="badge b-importante">Importante</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Escrita criativa — todos os dias</p></div><span class="itag">Todo dia</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Guerra Fria — 1 conteúdo novo</p></div><span class="itag">2× na semana</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Literatura</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Gente Pobre — Dostoiévski · iniciar (~20 pág/dia)</p><p class="isub">Se Rilke e Gogol já estiverem em andamento, alterne conforme o humor</p></div><span class="itag">Todo dia</span></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><span class="group-title">Filosofia</span><span class="badge b-nutre">Nutre você</span></div>
+      <div class="item" onclick="tog(this)"><div class="cb"></div><div class="ibody"><p class="ititle">Schopenhauer — As dores do mundo · continuar</p><p class="isub">~15 pág · 1 vez na semana, sem culpa se não der</p></div><span class="itag">1× na semana</span></div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Reiniciar checklist</button>
+</div>
+
+<script>
+  const STORAGE_KEY = 'checklist_state';
+
+  function getItems() {
+    return document.querySelectorAll('.item');
+  }
+
+  function update() {
+    const items = getItems();
+    let done = 0;
+    items.forEach(i => { if (i.classList.contains('done')) done++; });
+    const pct = Math.round((done / items.length) * 100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-label').textContent = done + ' de ' + items.length + ' itens concluídos (' + pct + '%)';
+  }
+
+  function saveState() {
+    const items = getItems();
+    const state = [];
+    items.forEach((item, i) => state.push(item.classList.contains('done')));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const state = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!state) return;
+      const items = getItems();
+      items.forEach((item, i) => {
+        if (state[i]) {
+          item.classList.add('done');
+          item.querySelector('.cb').classList.add('checked');
+        }
+      });
+    } catch(e) {}
+  }
+
+  function tog(el) {
+    el.classList.toggle('done');
+    el.querySelector('.cb').classList.toggle('checked');
+    update();
+    saveState();
+  }
+
+  function resetAll() {
+    if (!confirm('Reiniciar todo o checklist?')) return;
+    getItems().forEach(item => {
+      item.classList.remove('done');
+      item.querySelector('.cb').classList.remove('checked');
+    });
+    update();
+    saveState();
+  }
+
+  loadState();
+  update();
+</script>
+</body>
+</html>
